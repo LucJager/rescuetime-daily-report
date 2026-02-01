@@ -1,0 +1,27 @@
+name: Daily RescueTime Report
+
+on:
+  schedule:
+    - cron: '0 23 * * *'  # Tous les jours à 23h UTC
+  workflow_dispatch:  # Permet de lancer manuellement
+
+jobs:
+  send-report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run daily report
+        env:
+          RESCUETIME_API_KEY: ${{ secrets.RESCUETIME_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: python daily_report.py
